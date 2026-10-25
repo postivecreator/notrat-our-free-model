@@ -227,6 +227,15 @@ node scripts/vendor-sync.mjs --rev 2.5.9        # 钉某个 tag
 刷完跑一次 `node tests/_smoke.mjs`。上游改过栅栏或 `/v1` 形状时，桥与工具可能需要跟着调，
 `VENDOR.json` 里记着当前钉的版本。
 
+> **推送注意（维护者）。** 上游的 `channels/business.mjs` 内嵌了 Gemini CLI 的公开 OAuth
+> 客户端凭据（`GOCSPX-` 开头那一对，google-gemini 官方仓库同样公开）。GitHub 的推送保护会
+> 把它判成泄露的密钥并**拒绝推送**（`422 Secret detected in content`），所以本仓库的
+> push protection 是关闭的 —— 因为这份上游闭包必须逐字保留，改它等于改上游逻辑。
+> 若日后有人重新打开它，`vendor-sync` 之后的推送会失败；届时按需在仓库设置里关闭 push
+> protection，或先在私有仓库推送再切换公开。secret scanning 本身保持开启（只告警、不拦）。
+
+> 本仓库的首次推送就是走这条路：内容一字未改，先推私有仓库，再切公开。
+
 ---
 
 ## 八、目录结构
