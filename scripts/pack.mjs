@@ -67,7 +67,6 @@ git([
   "archive",
   "--format=zip",
   `--prefix=${name}/`,
-  "-0", // 不压缩：插件本体 2.7MB，压缩收益小，换来解包更快、便于逐条核对
   "-o",
   out,
   "HEAD",
