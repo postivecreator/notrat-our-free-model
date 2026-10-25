@@ -1,0 +1,25 @@
+{
+  "note": "由 scripts/vendor-sync.mjs 生成，勿手改。",
+  "repository": "https://github.com/Ebony-Vinyl/dsh-our-free-model",
+  "revision": "local",
+  "versions": {
+    "upstream": "2.5.9",
+    "standalone": "2.5.4"
+  },
+  "entries": [
+    "src/（核心，零 npm 依赖）",
+    "packages/standalone/（独立本地服务：cli / service / management / eac / channels / web）",
+    "LICENSE"
+  ],
+  "excluded": [
+    "index.js（cordis 插件入口，不用）",
+    "client.js / adapter/（DSH 宿主壳，不用）",
+    "packages/desktop/（Tauri 桌面壳，不用）",
+    "packages/standalone/frontend/（前端源码，用已构建的 web/）",
+    "feed/ worker/（自更新与公告，standalone 不加载）"
+  ],
+  "files": {
+    "src": 66,
+    "standalone": 26
+  }
+}

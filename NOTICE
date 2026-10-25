@@ -1,0 +1,45 @@
+notrat-our-free-model
+=====================
+
+本项目是 Ebony-Vinyl/dsh-our-free-model 的衍生作品（derivative work）。
+
+上游
+----
+  仓库    https://github.com/Ebony-Vinyl/dsh-our-free-model
+  版本    upstream 2.5.9 / standalone 2.5.4
+  许可证  MIT — Copyright (c) 2026 Ebony-Vinyl
+  许可证 原文见本目录 LICENSE（逐字保留，未作修改）
+
+本项目改了什么
+--------------
+单一句子：把上游从 DSH（DeepSeek Harness）的插件外壳里取出来，换成 Notrat 的接线。
+
+  1. 宿主接线    以上游 packages/standalone 替代 cordis 插件入口，由 Notrat 侧启动/托管
+  2. 反代桥      server/bridge.js — 同源改写，把上游管理界面内嵌进 Notrat 面板
+  3. MCP 外壳    server/index.js — 将上游管理与运行状态暴露为 MCP 工具
+  4. 面板        panels/ofm.tsx — 侧栏内嵌视图、控制条、接入向导
+  5. 初始化      server/engine.js — 引擎生命周期、端口探测、配置注入
+
+未改动的部分
+------------
+上游引擎与前端界面（server/upstream/）原样保留，未改逻辑、未改样式。
+该目录下的 LICENSE 为上游原始许可证副本。
+
+不包含的部分
+------------
+  index.js（cordis 插件入口）、client.js 与 adapter/（DSH 宿主壳）、
+  packages/desktop/（Tauri 桌面壳）、feed/ 与 worker/（自更新与公告）。
+详见 server/upstream/VENDOR.json。
+
+义务说明
+--------
+上游 MIT 许可证要求"上述版权声明与许可声明应包含于本软件的所有副本或
+主要部分中"。因此：
+  - 本目录 LICENSE 逐字保留上游原文（Copyright (c) 2026 Ebony-Vinyl）；
+  - server/upstream/LICENSE 随上游代码一同分发；
+  - 本 NOTICE 说明衍生关系与改动范围。
+
+商标
+----
+"Our Free Model"、"DSH"、"DeepSeek"、"Notrat" 及其它名称与商标归各自所有者
+所有，本项目仅在说明来源与兼容性时引用，与上述任何一方无隶属、认可或赞助关系。

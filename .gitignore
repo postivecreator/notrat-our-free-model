@@ -1,0 +1,22 @@
+# 依赖与产物
+node_modules/
+dist/
+*.zip
+*.bak
+
+# 本地运行状态（引擎把数据写在 ~/.notrat 下，这里兜一手防误提交）
+settings.json
+*.log
+*.db
+*.sqlite*
+
+# 凭据
+.env
+.env.*
+*.pem
+*.key
+
+# 系统杂物
+.DS_Store
+Thumbs.db
+desktop.ini

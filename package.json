@@ -1,0 +1,42 @@
+{
+  "name": "notrat-our-free-model",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Our Free Model（OFM）的 Notrat 插件外壳：把上游独立本地服务托起来，经一座固定端口的桥接成 Notrat 的自定义服务商与内嵌管理面板。",
+  "main": "./server/index.js",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "smoke": "node tests/_smoke.mjs",
+    "vendor": "node scripts/vendor-sync.mjs",
+    "pack": "node scripts/pack.mjs"
+  },
+  "keywords": [
+    "ai-agents",
+    "deepseek",
+    "developer-tools",
+    "free-model",
+    "llm",
+    "model-provider",
+    "openai-compatible",
+    "notrat",
+    "notrat-plugin"
+  ],
+  "upstream": {
+    "name": "dsh-our-free-model",
+    "url": "https://github.com/Ebony-Vinyl/dsh-our-free-model",
+    "version": "2.5.4",
+    "license": "MIT"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/postivecreator/notrat-our-free-model.git"
+  },
+  "homepage": "https://github.com/postivecreator/notrat-our-free-model#readme",
+  "bugs": {
+    "url": "https://github.com/postivecreator/notrat-our-free-model/issues"
+  }
+}

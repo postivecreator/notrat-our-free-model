@@ -1,0 +1,165 @@
+{
+  "id": "notrat-our-free-model",
+  "name": "Our Free Model 免费模型池",
+  "version": "1.0.0",
+  "type": "feature",
+  "manifestVersion": 2,
+  "enabled": true,
+  "scope": "global",
+  "icon": "🆓",
+  "description": "把 OFM（Our Free Model）的独立本地服务接进 Notrat：一套免登录的免费模型通道 + 十个账号渠道（LobsterAI / Qoder / TRAE / Cline / Loomy / Raccoon / MiniMax / ZCode / Gemini / Kilo）+ 本地 OpenAI 兼容网关 + 用量看板与运行日志。本插件只做接线：托管上游进程、把管理面放到固定端口的桥后面，于是自定义服务商填一次就够，管理界面直接内嵌成面板。",
+  "author": {
+    "name": "Notrat Community",
+    "url": "https://github.com/postivecreator/notrat-our-free-model"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/postivecreator/notrat-our-free-model",
+  "notrat": {
+    "minVersion": "1.3.3"
+  },
+  "mcpServers": [
+    {
+      "id": "ofm",
+      "name": "Our Free Model",
+      "transport": "stdio",
+      "command": "node",
+      "args": [
+        "${pluginDir}/server/index.js"
+      ],
+      "env": {
+        "NOTRAT_OFM_ENGINE_PORT": "${settings:enginePort}",
+        "NOTRAT_OFM_BRIDGE_PORT": "${settings:bridgePort}",
+        "NOTRAT_OFM_AUTOSTART": "${settings:autoStart}"
+      }
+    }
+  ],
+  "contributions": {
+    "commands": [
+      {
+        "name": "ofm-status",
+        "description": {
+          "zh": "看运行状态（引擎 / 模型数 / 渠道 / 可用模型）",
+          "en": "Show engine, model and channel status"
+        },
+        "tool": "ofm_status",
+        "argsTemplate": "{}",
+        "usage": "/ofm-status"
+      },
+      {
+        "name": "ofm-models",
+        "description": {
+          "zh": "列模型目录（可先重新拉取）",
+          "en": "List the model catalog"
+        },
+        "tool": "ofm_models",
+        "argsTemplate": "{ \"refresh\": $0 }",
+        "usage": "/ofm-models true"
+      },
+      {
+        "name": "ofm-wiring",
+        "description": {
+          "zh": "取接入三件套（baseUrl / 占位口令 / 模型 id）",
+          "en": "Show wiring for the Notrat custom provider"
+        },
+        "tool": "ofm_wiring",
+        "argsTemplate": "{}",
+        "usage": "/ofm-wiring"
+      },
+      {
+        "name": "ofm-adopt",
+        "description": {
+          "zh": "生成一键接入链接（点一下让 Notrat 自己弹确认框）",
+          "en": "Generate the one-click import link for Notrat"
+        },
+        "tool": "ofm_provider_link",
+        "argsTemplate": "{}",
+        "usage": "/ofm-adopt"
+      },
+      {
+        "name": "ofm-start",
+        "description": {
+          "zh": "启动引擎",
+          "en": "Start the local engine"
+        },
+        "tool": "ofm_engine",
+        "argsTemplate": "{ \"action\": \"start\" }",
+        "usage": "/ofm-start"
+      },
+      {
+        "name": "ofm-stop",
+        "description": {
+          "zh": "停止引擎（只停本插件拉起的那个）",
+          "en": "Stop the engine this plugin started"
+        },
+        "tool": "ofm_engine",
+        "argsTemplate": "{ \"action\": \"stop\" }",
+        "usage": "/ofm-stop"
+      },
+      {
+        "name": "ofm-doctor",
+        "description": {
+          "zh": "自检（端口 / 起没起来 / 最近日志）",
+          "en": "Self-check: ports, liveness, recent logs"
+        },
+        "tool": "ofm_engine",
+        "argsTemplate": "{ \"action\": \"info\" }",
+        "usage": "/ofm-doctor"
+      }
+    ],
+    "promptSections": [
+      {
+        "slot": "custom",
+        "title": "Our Free Model 免费模型池（插件 notrat-our-free-model）",
+        "content": "用户装了「Our Free Model 免费模型池」插件：它把 OFM 的独立本地服务托成后台进程，再经一座**固定端口**的桥（默认 8132）接到 Notrat 的自定义服务商，并把上游那套管理界面内嵌成面板。\n\n**接入方式（用户问「怎么用」时）**：调 `ofm_wiring`，拿 `baseUrl`（形如 `http://127.0.0.1:8132/v1`）、`apiKey`（固定常量 `ofm-bridge`）、`models[].id`，然后引导用户到「设置 → AI → 自定义服务商（OpenAI 兼容）」按这三项填。要点：\n- `apiKey` 就是占位口令 `ofm-bridge`，**不是真的 key** —— 桥在出站时替换成上游的真 key，所以真 key 不必贴进配置，也不必问用户要。\n- baseUrl 指向桥而不是上游自己的 18900：上游换端口时已接入的配置不会失效。\n- 模型名必须来自 `ofm_provider_link`（一键接入链接）、`ofm_models` / `ofm_wiring` 的返回，**不要凭空编模型 id**。\n\n**一键接入**：用户说「一键接入 / 怎么配进来 / 帮我接上」时调 `ofm_provider_link`，把返回的 `link` 交给用户点（或你自己用系统打开它）。这条链接走的是 Notrat 自己的导入通道 `notrat://import-ai?…`，应用会弹出确认框、用户点确认才落盘——**不要**手抄 baseUrl 让用户一项项填。若链接无反应，再用返回的 `fallbackJson` 走 设置 → AI → 导入。\n\n**界面即入口**：面板首屏就是上游那套管理界面（原样铺满）。桥会往它里面注入一颗常驻浮标「接入 Notrat」——用户点它，页面 postMessage 回面板，面板调 `openExternal` 拉起 `notrat://import-ai` 确认框。所以用户说「界面里怎么接进来」时，指的就是这颗浮标，不必让他退回设置页。\n\n**常用工具**：`ofm_status`（总览：是否运行、模型数、可用数、渠道、EAC 登录态）、`ofm_models`（refresh=true 重新拉目录、probe=true 做可用性探测，都会真的打上游）、`ofm_model_test`（单模型真实推理测试，耗额度）、`ofm_channels`（渠道状态或直接发 RPC）、`ofm_settings`（读改上游设置）、`ofm_stats`（用量看板数据）、`ofm_engine`（start / stop / restart / logs / info）、`ofm_ui`（管理界面地址）。\n\n**排查顺序**：`ofm_status` 报 running=false → `ofm_engine` action=start；起来了但模型数为 0 → `ofm_models` refresh=true；推理返回 401/503 → 401 说明上游 key 被轮换过（重启引擎即可，桥会用新的），503 说明用户在上游设置里把推理服务关了（`ofm_settings` patch `{\"enabled\":true}`）；启动报 service.lock → 同一数据目录已有实例在跑，别急着删锁，先 `ofm_status` 看是不是端口换了（上游换端口会把实际端口写回 settings.json 的 standalonePort，插件会自动 attach）。\n\n**口令纪律**：插件**永不**回传明文 key（`ofm_key` 只给打码值）。不要试图让 `ofm_wiring` 吐出真 key —— 没有这个开关，也不需要。\n\n**边界**：上游是第三方免费通道，随时可能限流或改协议；账号渠道（Qoder / TRAE 等）需要用户自己在管理界面里扫码或登录，插件**不发起任何登录**，也不代用户点同意。"
+      }
+    ],
+    "ui": [
+      {
+        "id": "ofm-panel",
+        "title": "🆓 模型池",
+        "icon": "🆓",
+        "location": "right-panel",
+        "content": {
+          "type": "component",
+          "sourceFile": "panels/ofm.tsx"
+        }
+      },
+      {
+        "id": "ofm-page",
+        "title": "🆓 Our Free Model · 全页",
+        "icon": "🆓",
+        "location": "page",
+        "content": {
+          "type": "component",
+          "sourceFile": "panels/ofm.tsx"
+        }
+      }
+    ],
+    "settings": [
+      {
+        "title": "引擎",
+        "description": "改端口后需要 ofm_engine action=restart；桥端口还要重载插件。",
+        "fields": [
+          {
+            "key": "autoStart",
+            "label": "随插件启动引擎",
+            "type": "boolean",
+            "default": true
+          },
+          {
+            "key": "enginePort",
+            "label": "引擎端口（上游，默认 18900）",
+            "type": "number",
+            "default": 18900
+          },
+          {
+            "key": "bridgePort",
+            "label": "桥端口（面板与自定义服务商都钉在这里）",
+            "type": "number",
+            "default": 8132
+          }
+        ]
+      }
+    ]
+  }
+}
